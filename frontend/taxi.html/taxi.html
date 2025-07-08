@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Taxi Booking</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; }
+        #map { height: 300px; width: 100%; margin-top: 10px; }
+        select, input, button { margin: 10px; padding: 10px; }
+    </style>
+</head>
+<body>
+    <h2>Taxi Booking</h2>
+    <input id="pickup" type="text" placeholder="Enter Pickup Location">
+    <input id="destination" type="text" placeholder="Enter Destination">
+    <button onclick="calculateRoute()">Get Route & Distance</button>
+    <div id="map"></div>
+    <p id="distance"></p>
+    
+    <h3>Select Car</h3>
+    <select id="car" onchange="calculateFare()">
+        <option value="10">Sedan - ₹10/km</option>
+        <option value="15">SUV - ₹15/km</option>
+        <option value="20">Luxury - ₹20/km</option>
+    </select>
+    <p id="fare"></p>
+    
+    <button onclick="confirmBooking()">Confirm Booking</button>
+    <button onclick="bookWhatsApp()">Book Instantly on WhatsApp</button>
+    
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB4WCBZCH_VNJARU9JmD_GGXDWzcbN16oY"></script>
+    <script>
+        let map, directionsService, directionsRenderer, distanceValue = 0;
+        
+        function initMap() {
+            map = new google.maps.Map(document.getElementById("map"), { center: { lat: 20.5937, lng: 78.9629 }, zoom: 5 });
+            directionsService = new google.maps.DirectionsService();
+            directionsRenderer = new google.maps.DirectionsRenderer();
+            directionsRenderer.setMap(map);
+        }
+        
+        function calculateRoute() {
+            let pickup = document.getElementById("pickup").value;
+            let destination = document.getElementById("destination").value;
+            
+            let request = {
+                origin: pickup,
+                destination: destination,
+                travelMode: 'DRIVING'
+            };
+            
+            directionsService.route(request, function(result, status) {
+                if (status == 'OK') {
+                    directionsRenderer.setDirections(result);
+                    distanceValue = result.routes[0].legs[0].distance.value / 1000; // Convert meters to km
+                    document.getElementById("distance").innerText = "Distance: " + distanceValue.toFixed(2) + " km";
+                    calculateFare();
+                }
+            });
+        }
+        
+        function calculateFare() {
+            let rate = document.getElementById("car").value;
+            let fare = distanceValue * rate;
+            document.getElementById("fare").innerText = "Estimated Fare: ₹" + fare.toFixed(2);
+        }
+        
+        function confirmBooking() {
+            let pickup = document.getElementById("pickup").value;
+            let destination = document.getElementById("destination").value;
+            let distance = document.getElementById("distance").innerText;
+            let fare = document.getElementById("fare").innerText;
+            let formURL = `https://docs.google.com/forms/d/e/YOUR_FORM_ID/viewform?entry.111111=${encodeURIComponent(pickup)}&entry.222222=${encodeURIComponent(destination)}&entry.333333=${encodeURIComponent(distance)}&entry.444444=${encodeURIComponent(fare)}`;
+            window.location.href = formURL;
+        }
+        
+        function bookWhatsApp() {
+            let pickup = document.getElementById("pickup").value;
+            let destination = document.getElementById("destination").value;
+            let distance = document.getElementById("distance").innerText;
+            let fare = document.getElementById("fare").innerText;
+            let phone = "919876543210";
+            let message = `Hello, I want to book a taxi.\nPickup: ${pickup}\nDestination: ${destination}\n${distance}\n${fare}`;
+            let whatsappURL = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+            window.location.href = whatsappURL;
+        }
+    </script>
+</body>
+</html>
