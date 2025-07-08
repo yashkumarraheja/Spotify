@@ -14,7 +14,7 @@ function formatTime(seconds) {
 }
 
 async function getSongs() {
-  let res = await fetch("http://localhost:3000/api/songs");
+  let res = fetch("https://music-app-backend-production-1dd4.up.railway.app/api/songs")
     let songs = await res.json();
     return songs;
 
@@ -24,7 +24,7 @@ let songs = getSongs();
 
 const PlayMusic = (track) => {
   // let audio = new Audio("/Songs/" + track)
-  currentSong.src = `http://localhost:3000/songs/${encodeURIComponent(track)}`;
+ currentSong.src = `https://music-app-backend-production-1dd4.up.railway.app/songs/${encodeURIComponent(track)}`
   currentSong.play();
   play.src = "pauseicon/pause.png";
   document.querySelector(".songinfo").innerHTML = decodeURIComponent(track);
